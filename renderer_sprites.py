@@ -24,7 +24,7 @@ class SpritesRenderer(BasicRenderer):
 
         "boss": "assets/sprites/boss24.png",
 
-        "bg" : "assets/backgrounds/altes-papier-pergament-hintergrund-16602085209L8.jpg",
+        "bg" : "assets/backgrounds/old-paper-texture-background-1380404417tNE.jpg",
     }
 
     def __init__(self):
