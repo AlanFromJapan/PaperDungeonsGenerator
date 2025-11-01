@@ -6,6 +6,14 @@ class BasicRenderer:
     def __init__(self):
         self.objects = []
 
+    def draw_wall(self, draw, x1, y1, x2, y2, is_wall, wall_color, door_color, width=2):
+        if is_wall:
+            draw.line([(x1, y1), (x2, y2)], fill=wall_color, width=width)
+        else:
+            draw.line([(x1, y1), (x1 + abs(x2 - x1) // 3, y1 + abs(y2 - y1) // 3)], fill=door_color, width=width)
+            draw.line([(x1 + 2 * abs(x2 - x1) // 3, y1 + 2 * abs(y2 - y1) // 3), (x2, y2)], fill=door_color, width=width)
+
+
     def to_image(self, g : Grid, filename="grid.png", show=False):
         # Placeholder for image generation logic
         IMAGE_CELL_SIZE = 100  # Size of each cell in pixels
@@ -34,13 +42,13 @@ class BasicRenderer:
 
                     #draw wall or door
                     if direction == 'N':
-                        draw.line([(x * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE), ((x + 1) * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE)], fill=IMAGE_WALL_COLOR if is_wall else IMAGE_DOOR_COLOR, width=2)
+                        self.draw_wall(draw, x * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, (x + 1) * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR)
                     elif direction == 'S':
-                        draw.line([(x * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE), ((x + 1) * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE)], fill=IMAGE_WALL_COLOR if is_wall else IMAGE_DOOR_COLOR, width=2)
+                        self.draw_wall(draw, x * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, (x + 1) * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR)
                     elif direction == 'E':
-                        draw.line([((x + 1) * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE), ((x + 1) * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE)], fill=IMAGE_WALL_COLOR if is_wall else IMAGE_DOOR_COLOR, width=2)
+                        self.draw_wall(draw, (x + 1) * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, (x + 1) * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR)
                     elif direction == 'W':
-                        draw.line([(x * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE), (x * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE)], fill=IMAGE_WALL_COLOR if is_wall else IMAGE_DOOR_COLOR, width=2)
+                        self.draw_wall(draw, x * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, x * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR)
 
                 # Trap? Red dot in bottom left corner
                 if cell.traps:
