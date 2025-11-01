@@ -9,7 +9,7 @@ class SpritesRenderer(BasicRenderer):
 
         "potion": "assets/sprites/potion24.png",
         "artifact": "assets/sprites/artifact24.png",
-        "gems": "assets/sprites/gems24.png",
+        "gems": "assets/sprites/gem24.png",
         "level_up": "assets/sprites/levelup24.png",
 
         "cleric": "assets/sprites/cleric24.png",
@@ -21,6 +21,8 @@ class SpritesRenderer(BasicRenderer):
         "troll": "assets/sprites/troll24.png",
         "dragon": "assets/sprites/dragon24.png",
         "skeleton": "assets/sprites/skel24.png",
+
+        "boss": "assets/sprites/boss24.png",
     }
 
     def __init__(self):
@@ -98,19 +100,28 @@ class SpritesRenderer(BasicRenderer):
 
                 # Treasure? Gold dot in bottom right corner
                 if cell.treasures:
-                    dot_radius = 5
+                    offset = 0
                     for treasure in cell.treasures:
-                        treasure_position = (x * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - dot_radius * 2, y * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - dot_radius * 2)
-                        draw.ellipse([treasure_position[0] - dot_radius, treasure_position[1] - dot_radius, treasure_position[0] + dot_radius, treasure_position[1] + dot_radius], fill="gold")
+                        sprite = Image.open(self.sprites[treasure.treasure_type.name.lower()])
+                        treasure_position = (x * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - SPRITES_PADDING - sprite.size[0] - offset, y * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - SPRITES_PADDING - sprite.size[1])
+                        image.paste(sprite, treasure_position, sprite)
+                        # Treasures overlap a bit if multiple
+                        offset += sprite.size[0] // 2
 
 
                 #Boss? Large red square in center with boss ID number in middle
                 if cell.boss_id != 0:
-                    square_size = IMAGE_CELL_SIZE // 2
-                    top_left = (x * IMAGE_CELL_SIZE + (IMAGE_CELL_SIZE - square_size) // 2, y * IMAGE_CELL_SIZE + (IMAGE_CELL_SIZE - square_size) // 2)
-                    bottom_right = (top_left[0] + square_size, top_left[1] + square_size)
+                    sprite = Image.open(self.sprites["boss"])
+
+                    offset = IMAGE_CELL_SIZE // 2 - sprite.size[0] // 2
+                    top_left = (x * IMAGE_CELL_SIZE + offset, y * IMAGE_CELL_SIZE + offset)
+                    bottom_right = (top_left[0] + sprite.size[0], top_left[1] + sprite.size[1])
                     draw.rectangle([top_left, bottom_right], fill="red")
-                    text_position = (top_left[0] + square_size // 4, top_left[1] + square_size // 4)
+
+                    image.paste(sprite, top_left, sprite)
+
+                    offset = IMAGE_CELL_SIZE // 2 - 6
+                    text_position = (x * IMAGE_CELL_SIZE + offset + 3, y * IMAGE_CELL_SIZE + offset + 5)
                     draw.text(text_position, str(cell.boss_id), fill="black")
 
 
