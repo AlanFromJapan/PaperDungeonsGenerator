@@ -14,3 +14,14 @@ This code losely follows the rules of the original game (buy it!), adding a few 
 Like ... "started coding +1h" early. Not too shabby though.
 
 ![sample grid](assets/sample_early_grid1.png)
+
+## Adding hand-made sprites
+
+Aseprite is a good software for sprites design, don't judge it by my skills. All handmade originals though!
+
+![Grid with sprites](assets/sample_sprite_grid1.png)
+
+...and with a parchemin style background:
+
+
+![Grid with sprites and background](assets/sample_sprite_grid2.png)

@@ -23,6 +23,8 @@ class SpritesRenderer(BasicRenderer):
         "skeleton": "assets/sprites/skel24.png",
 
         "boss": "assets/sprites/boss24.png",
+
+        "bg" : "assets/backgrounds/altes-papier-pergament-hintergrund-16602085209L8.jpg",
     }
 
     def __init__(self):
@@ -33,12 +35,16 @@ class SpritesRenderer(BasicRenderer):
         IMAGE_CELL_SIZE = 100  # Size of each cell in pixels
         IMAGE_BG_COLOR = "white"
         IMAGE_WALL_COLOR = "black"
-        IMAGE_DOOR_COLOR = "lightgray"
+        IMAGE_DOOR_COLOR = "gray"
         SPRITES_PADDING = 4
         WALL_WIDTH = 4
 
         image = Image.new("RGB", (g.width * IMAGE_CELL_SIZE, g.height * IMAGE_CELL_SIZE), IMAGE_BG_COLOR)
         draw = ImageDraw.Draw(image)
+
+        background = Image.open(self.sprites["bg"])
+        image.paste(background, (0, 0))
+
         for y in range(g.height):
             for x in range(g.width):
                 cell = g.get_cell(x, y)
