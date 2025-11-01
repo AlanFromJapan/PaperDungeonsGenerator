@@ -1,5 +1,6 @@
 from grid import Grid
 from renderer_basic import BasicRenderer
+from renderer_sprites import SpritesRenderer
 
 
 def main():
@@ -7,7 +8,7 @@ def main():
     grid = Grid()
     print(grid)
 
-    renderer = BasicRenderer()
+    renderer = SpritesRenderer()
     renderer.to_image(grid, "grid.png", show=True)
 
 
