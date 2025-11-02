@@ -84,6 +84,10 @@ class Cell:
                 self.monsters.append(Monster.random_monster(nemesisiness=gen_params["nemesisiness"]))
 
 
+    def is_empty(self):
+        return not (self.traps or self.treasures or self.monsters or self.boss_id != 0)
+    
+
     @classmethod
     def generate_random_cell(cls, gen_params:dict):
         cell = cls()
@@ -110,7 +114,7 @@ class Grid:
         self.height = height
 
 
-    def generate(self):
+    def generate(self, check_good=True):
         gen_params = {
             "walliness": self.WALLINESS,
             "trapiness": self.TRAPINESS,
@@ -121,12 +125,18 @@ class Grid:
             "nemesisiness": self.NEMESISINESS
         }
 
-        #make grid
-        self.cells = [[Cell.generate_random_cell(gen_params) for _ in range(self.width)] for _ in range(self.height)]
-        #add bosses
-        self.randomize_bosses(bosses_count=3)
-        #cosmetics
-        self.fence_grid()
+        while True:
+            #make grid
+            self.cells = [[Cell.generate_random_cell(gen_params) for _ in range(self.width)] for _ in range(self.height)]
+            #add bosses
+            self.randomize_bosses(bosses_count=3)
+            #cosmetics
+            self.fence_grid()
+
+            #check if good
+            if not check_good or self.is_good():
+                break
+            print("Regenerating grid, not good enough...")
 
 
     def randomize_bosses(self, bosses_count):
@@ -170,3 +180,9 @@ class Grid:
         else:
             raise IndexError("Cell coordinates out of bounds")
         
+
+    def is_good(self):
+        """Check if good - need more 30% of cells to have something."""
+        total_cells = self.width * self.height
+        filled_cells = sum(1 for row in self.cells for cell in row if not cell.is_empty())
+        return (float(filled_cells) / float(total_cells)) >= 0.3
