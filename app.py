@@ -28,7 +28,8 @@ def main():
     grid.generate()
 
     renderer = SpritesRenderer()
-    renderer.IMAGE_CELL_SIZE = 150
+    renderer.IMAGE_CELL_SIZE = 120
+    renderer.WALL_WIDTH = 6
     #renderer.sprites["bg"] = "assets/backgrounds/altes-papier-pergament-hintergrund-16602085209L8.jpg"
     renderer.to_image(grid, to_file, show=show_file)
 
