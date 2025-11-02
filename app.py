@@ -24,10 +24,12 @@ def main():
     #rendering
     grid = Grid()
     grid.GEMINESS = 10
+    grid.NEMESISINESS = 1 #classic game style: each monster is nemesis to only one hero class
     grid.generate()
 
     renderer = SpritesRenderer()
     renderer.IMAGE_CELL_SIZE = 150
+    #renderer.sprites["bg"] = "assets/backgrounds/altes-papier-pergament-hintergrund-16602085209L8.jpg"
     renderer.to_image(grid, to_file, show=show_file)
 
     print(f"Image saved to {to_file}")

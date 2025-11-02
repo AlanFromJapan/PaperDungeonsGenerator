@@ -20,10 +20,10 @@ class Monster:
         self.nemesis_classes = nemesis_classes
 
     @classmethod
-    def random_monster(cls):
+    def random_monster(cls, nemesisiness=2):
         monster_names = ["Goblin", "Troll", "Dragon", "Skeleton"]
         name = random.choice(monster_names)
-        heroes_classes = random.sample(list(HeroesType), k=random.randint(1, 2))
+        heroes_classes = random.sample(list(HeroesType), k=random.randint(1, nemesisiness))
         nemesis_classes = []
         for hero_class in heroes_classes:
             nemesis_classes.append((hero_class, random.randint(1, 6)))
@@ -64,7 +64,7 @@ class Cell:
         if random.randint(1, 100) <= gen_params["geminess"]:
             #if gem then mandatory monster
             self.treasures.append(Treasure(TreasureType.GEMS))
-            self.monsters.append(Monster.random_monster())
+            self.monsters.append(Monster.random_monster(nemesisiness=gen_params["nemesisiness"]))
         else:
             #no gem then MAYBE treasure
 
@@ -81,7 +81,7 @@ class Cell:
                     self.treasures.append(Treasure(treasure_type))
             #maybe monster
             if random.randint(1, 100) <= gen_params["monsteriness"]:
-                self.monsters.append(Monster.random_monster())
+                self.monsters.append(Monster.random_monster(nemesisiness=gen_params["nemesisiness"]))
 
 
     @classmethod
@@ -102,6 +102,8 @@ class Grid:
     TREASURINESS = 20
     TREASURINESS_DOUBLE = 30
     MONSTERINESS = 30
+    # Other non-percentage factors 
+    NEMESISINESS = 2  # How many different hero classes a monster can be nemesis to
 
     def __init__(self, width = 6, height = 7):
         self.width = width
@@ -115,7 +117,8 @@ class Grid:
             "geminess": self.GEMINESS,
             "treasuriness": self.TREASURINESS,
             "treasuriness_double": self.TREASURINESS_DOUBLE,
-            "monsteriness": self.MONSTERINESS
+            "monsteriness": self.MONSTERINESS,
+            "nemesisiness": self.NEMESISINESS
         }
 
         #make grid
