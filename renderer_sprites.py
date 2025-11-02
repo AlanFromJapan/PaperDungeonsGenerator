@@ -28,18 +28,17 @@ class SpritesRenderer(BasicRenderer):
     }
 
     def __init__(self):
-        self.objects = []
+        super().__init__()
+        #override some settings
+        self.IMAGE_DOOR_COLOR = "gray"
+        #Add some new settings
+        self.SPRITES_PADDING = 4
+        self.WALL_WIDTH = 4
+
 
     def to_image(self, g : Grid, filename="grid.png", show=False):
-        # Placeholder for image generation logic
-        IMAGE_CELL_SIZE = 100  # Size of each cell in pixels
-        IMAGE_BG_COLOR = "white"
-        IMAGE_WALL_COLOR = "black"
-        IMAGE_DOOR_COLOR = "gray"
-        SPRITES_PADDING = 4
-        WALL_WIDTH = 4
 
-        image = Image.new("RGB", (g.width * IMAGE_CELL_SIZE, g.height * IMAGE_CELL_SIZE), IMAGE_BG_COLOR)
+        image = Image.new("RGB", (g.width * self.IMAGE_CELL_SIZE, g.height * self.IMAGE_CELL_SIZE), self.IMAGE_BG_COLOR)
         draw = ImageDraw.Draw(image)
 
         background = Image.open(self.sprites["bg"])
@@ -64,20 +63,19 @@ class SpritesRenderer(BasicRenderer):
 
                     #draw wall or door
                     if direction == 'N':
-                        self.draw_wall(draw, x * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, (x + 1) * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR, width=WALL_WIDTH)
+                        self.draw_wall(draw, x * self.IMAGE_CELL_SIZE, y * self.IMAGE_CELL_SIZE, (x + 1) * self.IMAGE_CELL_SIZE, y * self.IMAGE_CELL_SIZE, is_wall, self.IMAGE_WALL_COLOR, self.IMAGE_DOOR_COLOR, width=self.WALL_WIDTH)
                     elif direction == 'S':
-                        self.draw_wall(draw, x * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, (x + 1) * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR, width=WALL_WIDTH)
+                        self.draw_wall(draw, x * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE, (x + 1) * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE, is_wall, self.IMAGE_WALL_COLOR, self.IMAGE_DOOR_COLOR, width=self.WALL_WIDTH)
                     elif direction == 'E':
-                        self.draw_wall(draw, (x + 1) * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, (x + 1) * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR, width=WALL_WIDTH)
+                        self.draw_wall(draw, (x + 1) * self.IMAGE_CELL_SIZE, y * self.IMAGE_CELL_SIZE, (x + 1) * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE, is_wall, self.IMAGE_WALL_COLOR, self.IMAGE_DOOR_COLOR, width=self.WALL_WIDTH)
                     elif direction == 'W':
-                        self.draw_wall(draw, x * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, x * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR, width=WALL_WIDTH)
+                        self.draw_wall(draw, x * self.IMAGE_CELL_SIZE, y * self.IMAGE_CELL_SIZE, x * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE, is_wall, self.IMAGE_WALL_COLOR, self.IMAGE_DOOR_COLOR, width=self.WALL_WIDTH)
 
                 # Trap? Red dot in bottom left corner
                 if cell.traps and len(cell.traps) > 0:
                     sprite = Image.open(self.sprites["trap"])
-                    trap_position = (x * IMAGE_CELL_SIZE + SPRITES_PADDING, y * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - SPRITES_PADDING - sprite.size[1])
+                    trap_position = (x * self.IMAGE_CELL_SIZE + self.SPRITES_PADDING, y * self.IMAGE_CELL_SIZE + self.IMAGE_CELL_SIZE - self.SPRITES_PADDING - sprite.size[1])
                     image.paste(sprite, trap_position, sprite)
-                    print("Drawing trap at", trap_position)
 
                 # Monster? Blue dot in top left corner
                 if cell.monsters:
@@ -85,7 +83,7 @@ class SpritesRenderer(BasicRenderer):
                     for monster in cell.monsters:
                         sprite = Image.open(self.sprites[monster.name.lower()]) 
 
-                        monster_position = (x * IMAGE_CELL_SIZE + SPRITES_PADDING + offset, y * IMAGE_CELL_SIZE + SPRITES_PADDING )
+                        monster_position = (x * self.IMAGE_CELL_SIZE + self.SPRITES_PADDING + offset, y * self.IMAGE_CELL_SIZE + self.SPRITES_PADDING)
                         image.paste(sprite, monster_position, sprite)
                         # Monsters overlap a bit if multiple
                         offset += sprite.size[0] // 2
@@ -96,10 +94,10 @@ class SpritesRenderer(BasicRenderer):
                         hero_class, level = nemesis
 
                         sprite = Image.open(self.sprites[hero_class.name.lower()]) 
-                        nemesis_position = (x * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - SPRITES_PADDING - sprite.size[0] - offset, y * IMAGE_CELL_SIZE + SPRITES_PADDING)
+                        nemesis_position = (x * self.IMAGE_CELL_SIZE + self.IMAGE_CELL_SIZE - self.SPRITES_PADDING - sprite.size[0] - offset, y * self.IMAGE_CELL_SIZE + self.SPRITES_PADDING)
                         image.paste(sprite, nemesis_position, sprite)
                         # Draw level next to nemesis sprite
-                        text_position = (x * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - SPRITES_PADDING - offset - 6, y * IMAGE_CELL_SIZE + SPRITES_PADDING + sprite.size[1] - 12)
+                        text_position = (x * self.IMAGE_CELL_SIZE + self.IMAGE_CELL_SIZE - self.SPRITES_PADDING - offset - 6, y * self.IMAGE_CELL_SIZE + self.SPRITES_PADDING + sprite.size[1] - 12)
                         draw.text(text_position, str(level), fill="black")
                         # Nemesis indicators side by side (no overlap)
                         offset += sprite.size[0]
@@ -109,7 +107,7 @@ class SpritesRenderer(BasicRenderer):
                     offset = 0
                     for treasure in cell.treasures:
                         sprite = Image.open(self.sprites[treasure.treasure_type.name.lower()])
-                        treasure_position = (x * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - SPRITES_PADDING - sprite.size[0] - offset, y * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - SPRITES_PADDING - sprite.size[1])
+                        treasure_position = (x * self.IMAGE_CELL_SIZE + self.IMAGE_CELL_SIZE - self.SPRITES_PADDING - sprite.size[0] - offset, y * self.IMAGE_CELL_SIZE + self.IMAGE_CELL_SIZE - self.SPRITES_PADDING - sprite.size[1])
                         image.paste(sprite, treasure_position, sprite)
                         # Treasures overlap a bit if multiple
                         offset += sprite.size[0] // 2
@@ -119,15 +117,15 @@ class SpritesRenderer(BasicRenderer):
                 if cell.boss_id != 0:
                     sprite = Image.open(self.sprites["boss"])
 
-                    offset = IMAGE_CELL_SIZE // 2 - sprite.size[0] // 2
-                    top_left = (x * IMAGE_CELL_SIZE + offset, y * IMAGE_CELL_SIZE + offset)
+                    offset = self.IMAGE_CELL_SIZE // 2 - sprite.size[0] // 2
+                    top_left = (x * self.IMAGE_CELL_SIZE + offset, y * self.IMAGE_CELL_SIZE + offset)
                     bottom_right = (top_left[0] + sprite.size[0], top_left[1] + sprite.size[1])
                     draw.rectangle([top_left, bottom_right], fill="red")
 
                     image.paste(sprite, top_left, sprite)
 
-                    offset = IMAGE_CELL_SIZE // 2 - 6
-                    text_position = (x * IMAGE_CELL_SIZE + offset + 3, y * IMAGE_CELL_SIZE + offset + 5)
+                    offset = self.IMAGE_CELL_SIZE // 2 - 6
+                    text_position = (x * self.IMAGE_CELL_SIZE + offset + 3, y * self.IMAGE_CELL_SIZE + offset + 5)
                     draw.text(text_position, str(cell.boss_id), fill="black")
 
 

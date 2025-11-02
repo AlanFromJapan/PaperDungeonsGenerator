@@ -5,6 +5,10 @@ from grid import Grid
 class BasicRenderer:
     def __init__(self):
         self.objects = []
+        self.IMAGE_CELL_SIZE = 100  # Size of each cell in pixels
+        self.IMAGE_BG_COLOR = "white"
+        self.IMAGE_WALL_COLOR = "black"
+        self.IMAGE_DOOR_COLOR = "lightgray"
 
     def draw_wall(self, draw, x1, y1, x2, y2, is_wall, wall_color, door_color, width=2):
         if is_wall:
@@ -16,12 +20,9 @@ class BasicRenderer:
 
     def to_image(self, g : Grid, filename="grid.png", show=False):
         # Placeholder for image generation logic
-        IMAGE_CELL_SIZE = 100  # Size of each cell in pixels
-        IMAGE_BG_COLOR = "white"
-        IMAGE_WALL_COLOR = "black"
-        IMAGE_DOOR_COLOR = "lightgray"
 
-        image = Image.new("RGB", (g.width * IMAGE_CELL_SIZE, g.height * IMAGE_CELL_SIZE), IMAGE_BG_COLOR)
+
+        image = Image.new("RGB", (g.width * self.IMAGE_CELL_SIZE, g.height * self.IMAGE_CELL_SIZE), self.IMAGE_BG_COLOR)
         draw = ImageDraw.Draw(image)
         for y in range(g.height):
             for x in range(g.width):
@@ -42,46 +43,46 @@ class BasicRenderer:
 
                     #draw wall or door
                     if direction == 'N':
-                        self.draw_wall(draw, x * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, (x + 1) * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR)
+                        self.draw_wall(draw, x * self.IMAGE_CELL_SIZE, y * self.IMAGE_CELL_SIZE, (x + 1) * self.IMAGE_CELL_SIZE, y * self.IMAGE_CELL_SIZE, is_wall, self.IMAGE_WALL_COLOR, self.IMAGE_DOOR_COLOR)
                     elif direction == 'S':
-                        self.draw_wall(draw, x * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, (x + 1) * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR)
+                        self.draw_wall(draw, x * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE, (x + 1) * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE, is_wall, self.IMAGE_WALL_COLOR, self.IMAGE_DOOR_COLOR)
                     elif direction == 'E':
-                        self.draw_wall(draw, (x + 1) * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, (x + 1) * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR)
+                        self.draw_wall(draw, (x + 1) * self.IMAGE_CELL_SIZE, y * self.IMAGE_CELL_SIZE, (x + 1) * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE, is_wall, self.IMAGE_WALL_COLOR, self.IMAGE_DOOR_COLOR)
                     elif direction == 'W':
-                        self.draw_wall(draw, x * IMAGE_CELL_SIZE, y * IMAGE_CELL_SIZE, x * IMAGE_CELL_SIZE, (y + 1) * IMAGE_CELL_SIZE, is_wall, IMAGE_WALL_COLOR, IMAGE_DOOR_COLOR)
+                        self.draw_wall(draw, x * self.IMAGE_CELL_SIZE, y * self.IMAGE_CELL_SIZE, x * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE, is_wall, self.IMAGE_WALL_COLOR, self.IMAGE_DOOR_COLOR)
 
                 # Trap? Red dot in bottom left corner
                 if cell.traps:
                     dot_radius = 5
                     for trap in cell.traps:
-                        trap_position = (x * IMAGE_CELL_SIZE + dot_radius * 2, y * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - dot_radius * 2)
+                        trap_position = (x * self.IMAGE_CELL_SIZE + dot_radius * 2, y * self.IMAGE_CELL_SIZE + self.IMAGE_CELL_SIZE - dot_radius * 2)
                         draw.ellipse([trap_position[0] - dot_radius, trap_position[1] - dot_radius, trap_position[0] + dot_radius, trap_position[1] + dot_radius], fill="red")
 
                 # Monster? Blue dot in top left corner
                 if cell.monsters:
                     dot_radius = 5
                     for monster in cell.monsters:
-                        monster_position = (x * IMAGE_CELL_SIZE + dot_radius * 2, y * IMAGE_CELL_SIZE + dot_radius * 2)
+                        monster_position = (x * self.IMAGE_CELL_SIZE + dot_radius * 2, y * self.IMAGE_CELL_SIZE + dot_radius * 2)
                         draw.ellipse([monster_position[0] - dot_radius, monster_position[1] - dot_radius, monster_position[0] + dot_radius, monster_position[1] + dot_radius], fill="blue")
                     # Monster's nemesis classes could be indicated with letter
                     offset = 0
                     for nemesis in monster.nemesis_classes:
                         hero_class, level = nemesis
-                        text_position = (x * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - 15 - offset, y * IMAGE_CELL_SIZE  + 10)
+                        text_position = (x * self.IMAGE_CELL_SIZE + self.IMAGE_CELL_SIZE - 15 - offset, y * self.IMAGE_CELL_SIZE  + 10)
                         draw.text(text_position, hero_class.name[0] + str(level), fill="black")
                         offset += 15
                 # Treasure? Gold dot in bottom right corner
                 if cell.treasures:
                     dot_radius = 5
                     for treasure in cell.treasures:
-                        treasure_position = (x * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - dot_radius * 2, y * IMAGE_CELL_SIZE + IMAGE_CELL_SIZE - dot_radius * 2)
+                        treasure_position = (x * self.IMAGE_CELL_SIZE + self.IMAGE_CELL_SIZE - dot_radius * 2, y * self.IMAGE_CELL_SIZE + self.IMAGE_CELL_SIZE - dot_radius * 2)
                         draw.ellipse([treasure_position[0] - dot_radius, treasure_position[1] - dot_radius, treasure_position[0] + dot_radius, treasure_position[1] + dot_radius], fill="gold")
 
 
                 #Boss? Large red square in center with boss ID number in middle
                 if cell.boss_id != 0:
-                    square_size = IMAGE_CELL_SIZE // 2
-                    top_left = (x * IMAGE_CELL_SIZE + (IMAGE_CELL_SIZE - square_size) // 2, y * IMAGE_CELL_SIZE + (IMAGE_CELL_SIZE - square_size) // 2)
+                    square_size = self.IMAGE_CELL_SIZE // 2
+                    top_left = (x * self.IMAGE_CELL_SIZE + (self.IMAGE_CELL_SIZE - square_size) // 2, y * self.IMAGE_CELL_SIZE + (self.IMAGE_CELL_SIZE - square_size) // 2)
                     bottom_right = (top_left[0] + square_size, top_left[1] + square_size)
                     draw.rectangle([top_left, bottom_right], fill="red")
                     text_position = (top_left[0] + square_size // 4, top_left[1] + square_size // 4)

@@ -1,13 +1,6 @@
 from enum import Enum
 import random
 
-# Walliness factor for random grid generation (percentage of chance of having walls)
-WALLINESS = 25
-TRAPINESS = 30
-GEMINESS = 15
-TREASURINESS = 20
-TREASURINESS_DOUBLE = 30
-MONSTERINESS = 30
 
 class TreasureType(Enum):
     GEMS = "gems"
@@ -61,34 +54,40 @@ class Cell:
     def add_wall(self, direction):
         if direction in self.walls:
             self.walls[direction] = True
-    
-    def randomize(self):
+
+    def randomize(self, gen_params:dict):
         # Set a random wall based on WALLINESS factor
-        if random.randint(1, 100) <= WALLINESS:
+        if random.randint(1, 100) <= gen_params["walliness"]:
             self.walls[random.choice(['N', 'S', 'E', 'W'])] = True
-        if random.randint(1, 100) <= TRAPINESS:
+        if random.randint(1, 100) <= gen_params["trapiness"]:
             self.traps.append("Trap")
-        if random.randint(1, 100) <= GEMINESS:
+        if random.randint(1, 100) <= gen_params["geminess"]:
             #if gem then mandatory monster
             self.treasures.append(Treasure(TreasureType.GEMS))
             self.monsters.append(Monster.random_monster())
         else:
             #no gem then MAYBE treasure
-            if random.randint(1, 100) <= TREASURINESS:
-                treasure_type = random.choice(list(TreasureType))
+
+            #cannot have gems here
+            no_gem_list = list(TreasureType)
+            no_gem_list.remove(TreasureType.GEMS)
+
+            if random.randint(1, 100) <= gen_params["treasuriness"]:
+                treasure_type = random.choice(no_gem_list)
                 self.treasures.append(Treasure(treasure_type))
                 # maybe double treasure?
-                if random.randint(1, 100) <= TREASURINESS_DOUBLE:
-                    treasure_type = random.choice(list(TreasureType))
+                if random.randint(1, 100) <= gen_params["treasuriness_double"]:
+                    treasure_type = random.choice(no_gem_list)
                     self.treasures.append(Treasure(treasure_type))
             #maybe monster
-            if random.randint(1, 100) <= MONSTERINESS:  # 30% chance of monster
+            if random.randint(1, 100) <= gen_params["monsteriness"]:
                 self.monsters.append(Monster.random_monster())
 
+
     @classmethod
-    def generate_random_cell(cls):
+    def generate_random_cell(cls, gen_params:dict):
         cell = cls()
-        cell.randomize()
+        cell.randomize(gen_params)
         return cell
 
     def __repr__(self):
@@ -96,11 +95,31 @@ class Cell:
 
 
 class Grid:
+    # Walliness factor for random grid generation (percentage of chance of having walls)
+    WALLINESS = 25
+    TRAPINESS = 30
+    GEMINESS = 10
+    TREASURINESS = 20
+    TREASURINESS_DOUBLE = 30
+    MONSTERINESS = 30
+
     def __init__(self, width = 6, height = 7):
         self.width = width
         self.height = height
+
+
+    def generate(self):
+        gen_params = {
+            "walliness": self.WALLINESS,
+            "trapiness": self.TRAPINESS,
+            "geminess": self.GEMINESS,
+            "treasuriness": self.TREASURINESS,
+            "treasuriness_double": self.TREASURINESS_DOUBLE,
+            "monsteriness": self.MONSTERINESS
+        }
+
         #make grid
-        self.cells = [[Cell.generate_random_cell() for _ in range(width)] for _ in range(height)]
+        self.cells = [[Cell.generate_random_cell(gen_params) for _ in range(self.width)] for _ in range(self.height)]
         #add bosses
         self.randomize_bosses(bosses_count=3)
         #cosmetics
@@ -117,9 +136,11 @@ class Grid:
                 cell.boss_id = placed_bosses + 1  # Assign a unique boss ID
                 placed_bosses += 1
 
-                #if boss the no monster
+                #if boss the no monster no treasure no trap
                 cell.monsters.clear()
-    
+                cell.treasures.clear()
+                cell.traps.clear()
+
 
     def fence_grid(self):
         """Add walls around the perimeter of the grid."""
