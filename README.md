@@ -9,6 +9,27 @@ This code losely follows the rules of the original game (buy it!), adding a few 
 - Can have multiple treasures in a room
 - Can start in different cell (not mandatorily bottom one)
 
+# Usage
+
+## Install
+```sh
+python3 -m venv .
+source bin/activate
+python -m pip install -r requirements.txt
+```
+
+## Usage
+```
+python app.py [options]
+```
+Options are:
+- `--show` shows result on popup on rendering
+- `--output <filename>` saves to *filename* (default is *grid.png*)
+- `--renderer <engine>` renders using one of the *engine* : *basic* or *sprites*
+
+## Customize
+Change the values of Grid instance before running (GEMINESS, MONSTERNESS, ...). See code for sample in `app.py`.
+
 # Renderings
 ## Early rendering 
 Like ... "started coding +1h" early. Not too shabby though.
@@ -24,4 +45,4 @@ Aseprite is a good software for sprites design, don't judge it by my skills. All
 ...and with a parchemin style background:
 
 
-![Grid with sprites and background](assets/sample_sprite_grid2.png)
+![Grid with sprites and background](assets/sample_sprite_grid3.png)

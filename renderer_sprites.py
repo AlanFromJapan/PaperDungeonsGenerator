@@ -24,6 +24,8 @@ class SpritesRenderer(BasicRenderer):
 
         "boss": "assets/sprites/boss24.png",
 
+        "gate": "assets/sprites/doorside32.png",
+
         "bg" : "assets/backgrounds/old-paper-texture-background-1380404417tNE.jpg",
     }
 
@@ -128,6 +130,35 @@ class SpritesRenderer(BasicRenderer):
                     text_position = (x * self.IMAGE_CELL_SIZE + offset + 3, y * self.IMAGE_CELL_SIZE + offset + 5)
                     draw.text(text_position, str(cell.boss_id), fill="black")
 
+
+                # Warp? 
+                if cell.is_warp_cell or cell.is_starting_cell:
+                    #never draw on TOP wall
+                    gate = Image.open(self.sprites["gate"])
+
+                    #bottom line
+                    if cell.is_starting_cell and y == g.height - 1:
+                        offset_x = (self.IMAGE_CELL_SIZE - gate.size[0]) // 2
+                        offset_y = gate.size[1]
+                        top_left = (x * self.IMAGE_CELL_SIZE + offset_x, (y+1) * self.IMAGE_CELL_SIZE - offset_y)
+                        image.paste(gate, top_left, gate)
+                    
+                    #right side
+                    if cell.is_warp_cell and x == g.width - 1:
+                        gate = gate.rotate(90, expand=False)
+                        offset_x = gate.size[0]
+                        offset_y = (self.IMAGE_CELL_SIZE - gate.size[1]) // 2
+                        top_left = ((x+1) * self.IMAGE_CELL_SIZE - offset_x, y * self.IMAGE_CELL_SIZE + offset_y)
+                        image.paste(gate, top_left, gate)
+
+                    
+                    #left side
+                    if cell.is_warp_cell and x == 0:
+                        gate = gate.rotate(270, expand=False)
+                        offset_y = (self.IMAGE_CELL_SIZE - gate.size[1]) // 2
+                        top_left = (0, y * self.IMAGE_CELL_SIZE + offset_y)
+                        image.paste(gate, top_left, gate)
+ 
 
         image.save(filename)
         if show:
