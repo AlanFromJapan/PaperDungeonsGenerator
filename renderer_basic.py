@@ -9,6 +9,7 @@ class BasicRenderer:
         self.IMAGE_BG_COLOR = "white"
         self.IMAGE_WALL_COLOR = "black"
         self.IMAGE_DOOR_COLOR = "lightgray"
+        self.IMAGE_WARP_COLOR = "red"
 
     def draw_wall(self, draw, x1, y1, x2, y2, is_wall, wall_color, door_color, width=2):
         if is_wall:
@@ -20,7 +21,7 @@ class BasicRenderer:
 
     def to_image(self, g : Grid, filename="grid.png", show=False):
         # Placeholder for image generation logic
-
+        LINE_WIDTH = 2
 
         image = Image.new("RGB", (g.width * self.IMAGE_CELL_SIZE, g.height * self.IMAGE_CELL_SIZE), self.IMAGE_BG_COLOR)
         draw = ImageDraw.Draw(image)
@@ -50,6 +51,23 @@ class BasicRenderer:
                         self.draw_wall(draw, (x + 1) * self.IMAGE_CELL_SIZE, y * self.IMAGE_CELL_SIZE, (x + 1) * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE, is_wall, self.IMAGE_WALL_COLOR, self.IMAGE_DOOR_COLOR)
                     elif direction == 'W':
                         self.draw_wall(draw, x * self.IMAGE_CELL_SIZE, y * self.IMAGE_CELL_SIZE, x * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE, is_wall, self.IMAGE_WALL_COLOR, self.IMAGE_DOOR_COLOR)
+
+                # Warp? Red wall
+                if cell.is_warp_cell or cell.is_starting_cell:
+                    #never draw on TOP wall
+
+                    #bottom line
+                    if cell.is_starting_cell and y == g.height - 1:
+                        self.draw_wall(draw, x * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE - LINE_WIDTH, (x + 1) * self.IMAGE_CELL_SIZE, (y + 1) * self.IMAGE_CELL_SIZE - LINE_WIDTH, True, self.IMAGE_WARP_COLOR, self.IMAGE_WARP_COLOR)
+                    
+                    #right side
+                    if cell.is_warp_cell and x == g.width - 1:
+                        self.draw_wall(draw, (x + 1) * self.IMAGE_CELL_SIZE - LINE_WIDTH, y * self.IMAGE_CELL_SIZE, (x + 1) * self.IMAGE_CELL_SIZE - LINE_WIDTH, (y + 1) * self.IMAGE_CELL_SIZE, True, self.IMAGE_WARP_COLOR, self.IMAGE_WARP_COLOR)
+                    
+                    #left side
+                    if cell.is_warp_cell and x == 0:
+                        self.draw_wall(draw, x * self.IMAGE_CELL_SIZE + LINE_WIDTH, y * self.IMAGE_CELL_SIZE, x * self.IMAGE_CELL_SIZE + LINE_WIDTH, (y + 1) * self.IMAGE_CELL_SIZE, True, self.IMAGE_WARP_COLOR, self.IMAGE_WARP_COLOR)
+
 
                 # Trap? Red dot in bottom left corner
                 if cell.traps:

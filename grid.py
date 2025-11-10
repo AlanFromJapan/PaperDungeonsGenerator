@@ -45,6 +45,8 @@ class Cell:
         self.monsters = []
         self.warps = []
         self.boss_id = 0
+        self.is_starting_cell = False
+        self.is_warp_cell = False
 
 
     def remove_wall(self, direction):
@@ -132,6 +134,8 @@ class Grid:
             self.randomize_bosses(bosses_count=3)
             #cosmetics
             self.fence_grid()
+            self.add_starting_cell()
+            self.add_warps(warp_count=2)
 
             #check if good
             if not check_good or self.is_good():
@@ -163,6 +167,31 @@ class Grid:
         for y in range(self.height):
             self.get_cell(0, y).add_wall('W')
             self.get_cell(self.width - 1, y).add_wall('E')
+
+
+    def add_starting_cell(self):
+        """Add starting cells at the bottom row"""
+        for x in range(self.width):
+            y = self.height - 1
+            self.get_cell(x, y).is_starting_cell = True
+
+
+    def add_warps(self, warp_count=2):
+        """Add horizontal warps on left and right edges"""
+        if warp_count > self.height:
+            #avoid endless loops
+            warp_count = self.height
+
+        for _ in range(warp_count):
+            done = False
+            while not done:
+                y = random.randint(0, self.height - 1)
+                left_cell = self.get_cell(0, y)
+                right_cell = self.get_cell(self.width - 1, y)
+                if not left_cell.is_warp_cell and not right_cell.is_warp_cell:
+                    left_cell.is_warp_cell = True
+                    right_cell.is_warp_cell = True
+                    done = True
 
 
     def __repr__(self):
